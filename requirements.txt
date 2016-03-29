@@ -1,2 +1,2 @@
 debian: libxml2-dev, libxslt1-dev
-python3 packages: lxml, bs4, html5lib
+python3 packages: lxml, bs4
