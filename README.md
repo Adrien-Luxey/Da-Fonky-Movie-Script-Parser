@@ -12,7 +12,7 @@ Here are some movie scripts databases: http://www.imsdb.com , http://www.script-
 
 ## How does it work?
 
-First of all, we try to find the movie script in the given page. In essence, we look for the first <pre> tag, since movie scripts are most often located inside this DOM element.
+First of all, we try to find the movie script in the given page. In essence, we look for the first \<pre\> tag, since movie scripts are most often located inside this DOM element.
 
 Once we went through the introduction, we count the number of leading spaces at each line, ask the user for this line's type, and assume that all others lines with this amount of leading spaces must be of the same type. 
 
