@@ -217,7 +217,7 @@ with open(json_filename) as fd:
     print()
 
 
-    action = input_from_list("What do you want to do with it?", ACTIONS)
+    action = input_from_list("What do you want to do with it? ", ACTIONS)
 
     if( action == EXTRACT_CHARACTERS ):
         result_list = extract_characters(script)
