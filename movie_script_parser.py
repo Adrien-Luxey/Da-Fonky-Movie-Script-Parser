@@ -3,7 +3,7 @@
 
 # https://docs.python.org/3.0/library/urllib.request.html
 # webpage type : https://docs.python.org/3.4/library/http.client.html
-import os, sys, json, re, argparse, urllib.request
+import os, sys, json, re, argparse, urllib.request, html5lib
 from bs4 import BeautifulSoup, Tag, UnicodeDammit
 
 

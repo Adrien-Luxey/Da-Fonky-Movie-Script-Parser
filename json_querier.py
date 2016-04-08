@@ -202,7 +202,7 @@ args=argparser.parse_args()
 
 # loop until we get a valid json_filename
 
-#json_filename="/home/adrien/Programmation/Pierre/da-funky-movie-script-parser/outputs/the_fifth_element.json"
+#json_filename="home/adrien/Programmation/Pierre/da-funky-movie-script-parser/outputs/the_fifth_element.json"
 json_filename = ''
 if( args.json_filename != None ):
     json_filename = args.json_filename
