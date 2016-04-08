@@ -1,4 +1,4 @@
-
+#!/usr/bin/python3
 # coding: utf-8
 
 # https://docs.python.org/3.0/library/urllib.request.html
@@ -14,7 +14,9 @@ wrong_url = 'http://www.imqsdsdb.com/scriptljhs/Maqsdtrix,-The.html'
 
 helptext="""Welcome to the Movie Script Parser!
 
-It aims at creating a well formatted JSON file from the URL of a movie script online. The parser was written using only scripts from http://www.imsdb.com, so it might fail on other sites (and also fail on IMSDB, who knows?).
+It aims at creating a well formatted JSON file from the URL of a movie script online.
+
+The parser was written using only scripts from http://www.imsdb.com, so it might fail on other sites (and also fail on IMSDB, who knows?).
 
 It was written by Adrien Luxey for Pierre Peigné-Leroy in 2016."""
 
@@ -24,7 +26,8 @@ argparser.add_argument('script_url', metavar='script_url', type=str, nargs='?',
 
 args=argparser.parse_args()
 
-# get script_url if given as parameter
+
+# loop until we get a valid script_url
 
 script_url = ''
 is_webpage_fetched = False
@@ -71,7 +74,7 @@ while not is_webpage_fetched:
             answer = input('Shall we try with another URL? (Y/n) ')
             if( answer == 'N' or answer == 'n' ):
                 raise ValueError('The result was not what we expected.')
-        
+
         is_webpage_fetched = True
 
 
@@ -118,15 +121,18 @@ LOCATION=3
 spaces_regex = re.compile("^(\s*).*")
 location_regex = re.compile("^\s*(INT\.|EXT\.)")
 
-def get_line_type(line, usual_spaces):
+def get_line_type(line, stripped_line, usual_spaces, characters):
     # Counting the number of spaces at the beginning of the line
     spmatch = spaces_regex.search(line)
     spaces_number = len(spmatch.group(1))
     block_type = 0
-    
+
     if( location_regex.search(line) != None ):
         return LOCATION
-    
+
+    if stripped_line in characters:
+        return CHARACTER
+
     # Look for space
     for block_type_usual_spaces in usual_spaces:
         if spaces_number in block_type_usual_spaces:
@@ -134,13 +140,13 @@ def get_line_type(line, usual_spaces):
             #print('We consider {:d} leading spaces as a \'{:s}\' block.'.format(
             #      spaces_number, BLOCK_TYPES[block_type]))
             return usual_spaces.index(block_type_usual_spaces)
-    
+
     print('There are {:d} space(s) at the beginning of this line'.format(spaces_number))
     question = "What kind of block is that?\n"
     for i in range(len(BLOCK_TYPES)):
         question += '\t('+str(i)+') ' + BLOCK_TYPES[i] + '\n'
     print(question)
-    
+
     validated = False
     while( validated == False):
         try:
@@ -149,19 +155,19 @@ def get_line_type(line, usual_spaces):
                 block_type = int(input('? [0-{:d}] '.format(len(BLOCK_TYPES)-1)))
         except ValueError:
             continue
-        
+
         validated = True
         answer = input('You said the last block type was \'{:s}\', sure about that? (Y/n) '.format(
                 BLOCK_TYPES[block_type]))
         if( answer == 'n' or answer =='N' ):
             validated = False
-    
+
     remember_spaces = False
     validated = False
     while( validated == False):
         answer_spaces = input('Are all  lines with {:d} leading spaces \'{:s}\' blocks ? (Y/n) '.format(
                 spaces_number, BLOCK_TYPES[block_type]))
-        
+
         if( answer_spaces == 'n' or answer_spaces =='N' ):
             print('You said no: we will ask you again next time.')
             remember_spaces = False
@@ -170,17 +176,17 @@ def get_line_type(line, usual_spaces):
                   'every new block with {:d} leading spaces '.format(spaces_number) +
                   'will now be considered a \'{:s}\'.'.format(BLOCK_TYPES[block_type]) )
             remember_spaces = True
-        
+
         validated = True
         answer = input('Are you sure? (Y/n) ')
         if( answer == 'n' or answer =='N' ):
             validated = False
-    
+
     if( remember_spaces ):
         usual_spaces[block_type].append(spaces_number)
-        
+
     return block_type
-    
+
 
 
 # In[53]:
@@ -196,11 +202,12 @@ intro = []
 last_line_type = -1
 last_character = ''
 text = []
+characters=[]
 
 
 print()
 print()
-print("Here we go for some kickass move script parsing!")
+print("Here we go for some kickass movie script parsing!")
 print()
 print()
 print("Start by telling me when the introduction will end.")
@@ -211,23 +218,24 @@ for block in script_text.descendants:
     # Donc on continue sans parser ce bloc
     if(isinstance(block, Tag)):
         continue
-        
+
     # UnicodeDammit converts any string to UTF-8
+    # does not work so well
     block = UnicodeDammit(block, soup.original_encoding).unicode_markup
     # remove leading and ending end of lines
     block = block.strip('\n')
-    
+
     # if the block doesn't have any text, skip it
     if( re.search('\w', block) == None ):
         continue
-    
+
     # bs4 ne coupe pas toujours bien les différents blocs
     # Mieux vaut donc redécouper par paragraphe et les traiter un à un
     for line in block.split('\n'):
         stripped_line = line.strip(' \n\t\r')
         if( re.search('\w', line) == None ):
             continue
-            
+
         print('------------------------------ Begin line ------------------------------')
         print(line)
         print('                        ------- End line -------')
@@ -241,25 +249,27 @@ for block in script_text.descendants:
                 movie_script.append({
                     'type': 'introduction',
                     'text': '\n'.join(intro)})
-                
+
                 print(movie_script[-1])
             else:
                 print("OK")
                 print()
                 intro.append(stripped_line)
                 continue
-                
-        
-        line_type = get_line_type(line, usual_spaces)
+
+
+        line_type = get_line_type(line, stripped_line, usual_spaces, characters)
         print("The last line was interpreted as '{}'".format(BLOCK_TYPES[line_type]))
         print()
-        
+
         if(last_line_type == -1 # -1 = not initialized
            or last_line_type == line_type):
             text.append(stripped_line)
         else:
             if(last_line_type == CHARACTER):
                 last_character='\n'.join(text)
+                if not last_character in characters:
+                    characters.append(last_character)
             elif(last_line_type == SPEECH):
                 movie_script.append({
                     'type': BLOCK_TYPES[last_line_type],
@@ -274,23 +284,28 @@ for block in script_text.descendants:
                 print('We just parsed this JSON block:')
                 print(movie_script[-1])
             text=[stripped_line]
-        
+
         last_line_type = line_type
-        
+
         #print('block_type={:d}'.format(line_type))
         #print('usual spaces:')
         #print(usual_spaces)
         #print('This line is a \'{:s}\'.'.format(BLOCK_TYPES[line_type]))
-    
+
         print()
-    
+
     print()
     print()
-    
+
 movie_script.append({
     'type': BLOCK_TYPES[line_type],
     'text': '\n'.join(text)})
-    
+
+print('We just parsed this JSON block:')
+print(movie_script[-1])
+print()
+print()
+
 script['movie_script'] = movie_script
 
 print('All done, biiiiitch!')
@@ -314,5 +329,5 @@ finally:
     fd.close()
     print()
     print('This script was made by Adrien Luxey for Pierre Peigné-Leroy in 2016.')
-    print('It\'s free to use and shit, go check our licence.')
+    print('It\'s free to use and all, go check our licence.')
 
