@@ -235,7 +235,7 @@ with open(json_filename) as fd:
     print()
     print()
     print()
-    input('Happy? (Y/fuck off) ')
+    input('Happy? (Y/I don\'t really care) ')
     print()
 
 
