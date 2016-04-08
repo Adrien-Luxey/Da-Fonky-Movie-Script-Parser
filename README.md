@@ -25,13 +25,20 @@ Then, you'll need to get my project and launch it. Most of it is interactive, th
 Instructions for Debian/Ubuntu:
 ```
 sudo apt-get install -Y python3 python3-pip git
+
 sudo pip3 install argparse urllib bs4 re
+
 git clone https://github.com/Adrien-Luxey/Da-Fonky-Movie-Script-Parser.git
+
 cd Da-Fonky-Movie-Script-Parser
+
 chmod +x json_querier.py movie_script_parser.py
+
 ./movie_script_parser.py
-# Do stuff
+# Follow my interactive lead
+
 ./json_querier.py
+# Follow instructions again (please)
 ```
 
 ## How does it work?
