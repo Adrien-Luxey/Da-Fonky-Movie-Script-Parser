@@ -26,6 +26,8 @@ Instructions for Debian/Ubuntu:
 ```
 sudo apt-get install -Y python3 python3-pip git
 
+# Only run "sudo pip..." if you are ready to spend your after-life in Hell.
+# Virtualenv would be better.
 sudo pip3 install argparse urllib bs4 re
 
 git clone https://github.com/Adrien-Luxey/Da-Fonky-Movie-Script-Parser.git
