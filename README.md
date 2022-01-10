@@ -16,6 +16,8 @@ My friend Pierre Peigné-Leroy needed to parse movie scripts to make some stylom
 
 ## How can I use it?
 
+> TODO: proper packaging!!
+
 You need python3, and some python packages (I use pip3 to install plugin, but conda or anything else is fine too).
 
 Needed python packages: `argparse, urllib, bs4, re`
@@ -56,11 +58,18 @@ Active learning, baby!
 
 This part is fairly intuitive, just follow the interactive instructions.
 
+
+## License
+
+Licensed under the [Unlicense](./LICENSE), a.k.a public domain: 
+
+> I hereby declare that you can use, modify and sell my script if you feel like it.
+> 
+> In fact, this code is already yours: it's a common good!
+
+
 -----------------
 
 Contributions welcome etc etc.
 
-No licence at the moment, but I hereby declare that you can use, modify and sell my script if you feel like it.
-
 Adrien
-
